@@ -21,17 +21,13 @@ public class AdminServiceImpl  implements AdminService{
 	private CustomerRepository customerRepository;
 
 
-
-	private  String adminName= "admin";
-	private String adminPassword = "1234";
-
 	@Autowired
 	public AdminServiceImpl() {
 	}
 	
 	
 	public boolean performLogin(String name, String password) throws CouponSystemException {
-		if (adminName.equals(name) && adminPassword.equals(password)) {
+		if (name.equals("admin") && password.equals("1234")) {
 			return true;
 		} else {
 			return false;

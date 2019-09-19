@@ -1,7 +1,8 @@
 package com.mbms.model;
 
+import com.mbms.login.LoginType;
 
-	public class CustomLogin {
+public class CustomLogin {
 
 		private LoginType loginType;
 		private int typeId;
