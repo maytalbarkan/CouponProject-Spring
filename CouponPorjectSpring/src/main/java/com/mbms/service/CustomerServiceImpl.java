@@ -3,13 +3,15 @@ package com.mbms.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mbms.login.CouponClientFacade;
+import com.mbms.login.LoginType;
 import com.mbms.model.Customer;
 import com.mbms.repository.CouponRepository;
 import com.mbms.repository.CustomerRepository;
 
 
 @Service
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceImpl implements CustomerService, CouponClientFacade {
 
 	
 
@@ -51,6 +53,14 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public Customer getCustomerName(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public CouponClientFacade login(String name, String password, LoginType clientType) {
 		// TODO Auto-generated method stub
 		return null;
 	}

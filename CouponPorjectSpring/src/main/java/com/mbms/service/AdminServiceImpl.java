@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.mbms.exceptions.CouponSystemException;
+import com.mbms.login.CouponClientFacade;
+import com.mbms.login.LoginType;
 import com.mbms.model.Company;
 import com.mbms.model.Customer;
 import com.mbms.repository.CompanyRepository;
@@ -12,7 +14,7 @@ import com.mbms.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Value;
 
 @Service
-public class AdminServiceImpl  implements AdminService{
+public class AdminServiceImpl  implements AdminService, CouponClientFacade{
 
 	@Autowired
 	private CompanyRepository companyRepository;
@@ -21,7 +23,6 @@ public class AdminServiceImpl  implements AdminService{
 	private CustomerRepository customerRepository;
 
 
-	@Autowired
 	public AdminServiceImpl() {
 	}
 	
@@ -130,6 +131,13 @@ public class AdminServiceImpl  implements AdminService{
 		customer.setPassword(password);
 		customerRepository.save(customer);
 
+	}
+
+
+	@Override
+	public CouponClientFacade login(String name, String password, LoginType clientType) {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 	}
 

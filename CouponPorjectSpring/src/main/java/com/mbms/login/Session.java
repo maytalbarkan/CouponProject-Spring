@@ -1,30 +1,18 @@
 package com.mbms.login;
 
-
 import org.springframework.stereotype.Component;
 
-
-
 import net.bytebuddy.asm.Advice.This;
-
-
 
 @Component
 
 public class Session {
 
-
-
 	private CouponClientFacade facade;
 
 	private long lastAccesed;
 
-	
-
-	
-
 	public CouponClientFacade getFacade() {
-
 		return facade;
 
 	}
@@ -54,9 +42,5 @@ public class Session {
 		return "Session [facade=" + facade + ", lastAccesed=" + lastAccesed + "]";
 
 	}
-
-	
-
-	
 
 }

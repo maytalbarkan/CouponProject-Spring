@@ -1,6 +1,7 @@
 package com.mbms.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,9 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mbms.login.LoginController;
+import com.mbms.login.Session;
 import com.mbms.model.Company;
 import com.mbms.model.Customer;
 import com.mbms.service.AdminService;
+import com.mbms.service.AdminServiceImpl;
 
 
 @RestController
@@ -26,7 +30,12 @@ public class AdminController {
 	@Autowired
 	private AdminService adminService;
 
+	@Autowired
+	private Map<String, Session> tokens;
 	
+	private Session exists (String token) {
+		return LoginController.tokens.get(token);
+	}
 	//COMPANY:
 	
 	@GetMapping("/getAllCompnies")
@@ -40,11 +49,25 @@ public class AdminController {
 		return adminService.companyById(id);
 	}
 	
-	@PostMapping("/createCompany")
-	public ResponseEntity<Company> createCompany (@RequestBody Company company) throws Exception{
-		Company company2 = adminService.createCompany(company);
-		ResponseEntity<Company> result = new ResponseEntity<Company>(company2,HttpStatus.OK);
-		return result;
+	@PostMapping("/createCompany/{token}")
+	public ResponseEntity<String> createCompany (@RequestBody Company company, @PathVariable String token) throws Exception{
+		Session session = exists(token);
+		System.out.println(session);
+		if (session==null) {
+			throw new Exception("wrong session");
+		} else if(session!=null) {
+			session.setLastAccesed(System.currentTimeMillis());
+		try {
+			
+			((AdminServiceImpl)session.getFacade()).createCompany(company);
+			return new ResponseEntity<>("company created", HttpStatus.OK);
+			
+	}catch (Exception e){
+		return new ResponseEntity<>("wrong", HttpStatus.UNAUTHORIZED);
+	}
+	}
+		return null;
+		
 	}
 	//not working
 	@PostMapping("/updateCompany")

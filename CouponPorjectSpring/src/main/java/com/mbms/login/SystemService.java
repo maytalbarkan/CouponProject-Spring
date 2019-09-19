@@ -19,6 +19,7 @@ import com.mbms.repository.CouponRepository;
 import com.mbms.repository.CustomerRepository;
 import com.mbms.repository.LogRepository;
 import com.mbms.service.AdminService;
+import com.mbms.service.AdminServiceImpl;
 import com.mbms.service.CompanyService;
 import com.mbms.service.CompanyServiceImpl;
 import com.mbms.service.CustomerService;
@@ -29,22 +30,22 @@ import com.mbms.service.CustomerServiceImpl;
 
 
 /**
- * The class will perform general actions related to the system. Log in, and delete expired coupons.
+ * This class will have an actions related to the system like Log in, and delete expired coupons.
  */
 
 @Service
 public class SystemService {
 
 	@Autowired
-	private AdminService adminService;
+	private AdminServiceImpl adminService;
 
 	@Autowired
-	private CompanyService companyService;
+	private CompanyServiceImpl companyService;
 	@Autowired
 	private CompanyRepository companyRepository;
 
 	@Autowired
-	private CustomerService customerService;
+	private CustomerServiceImpl customerService;
 	@Autowired
 	private CustomerRepository customerRepository;
 
@@ -66,8 +67,8 @@ public class SystemService {
 		case ADMIN:
 
 			if (name.equals("admin")&&password.equals("1234")) {
-
-				return (CouponClientFacade) adminService ;
+				adminService = context.getBean(AdminServiceImpl.class);
+				return adminService;
 
 			}
 
@@ -81,7 +82,7 @@ public class SystemService {
 
 				comp.setId(comp.getId());
 
-				return (CouponClientFacade) companyService;
+				return companyService;
 
 			}
 
@@ -95,7 +96,7 @@ public class SystemService {
 
 				cust.setId(cust.getId());
 
-				return (CouponClientFacade) customerService;
+				return customerService;
 
 			}
 
@@ -108,8 +109,8 @@ public class SystemService {
 
 	/**
 	 * The function will be activated when the system is activated or every 24 hours
-	 * in which the system operates. The function will get from the DB all expiring
-	 * coupons and remove them from the DB.
+	 * in which the system operates. The function will get all coupons from the DB and will 
+	 * expired coupons.
 	 */
 
 	@Scheduled(fixedRateString = "${coupon.project.remove.daily.coupon.every.day}")

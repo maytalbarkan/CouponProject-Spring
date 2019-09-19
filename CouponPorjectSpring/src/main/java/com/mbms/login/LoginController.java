@@ -1,5 +1,6 @@
 package com.mbms.login;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mbms.exceptions.CouponSystemException;
 
 @RestController
-@RequestMapping("login")
+@RequestMapping("loginService")
 public class LoginController {
 	
 //	@Autowired
@@ -47,8 +48,7 @@ public class LoginController {
 //		return true;
 //	}
 	
-	@Autowired
-	private Map<String, Session> tokens;
+	public static Map<String, Session> tokens = new HashMap<String,Session>();
 	@Autowired
 	private SystemService couponSystem;
 
@@ -57,13 +57,12 @@ public class LoginController {
 		if (!clientType.equals("ADMIN") && !clientType.equals("COMPANY") && !clientType.equals("CUSTOMER")) {
 			return new ResponseEntity<>("Check clientType again", HttpStatus.UNAUTHORIZED);
 		}
-		Session session = null;
+		Session session = new Session();
 		CouponClientFacade facade = null;
 		String token = UUID.randomUUID().toString();
 		long lastAccessed=System.currentTimeMillis();
 		try {
-			facade=(CouponClientFacade) couponSystem.login(name, password, LoginType.valueOf(clientType));
-			session = new Session();
+			facade=couponSystem.login(name, password, LoginType.valueOf(clientType));
 			session.setFacade(facade);
 			session.setLastAccesed(lastAccessed);
 			tokens.put(token, session);
