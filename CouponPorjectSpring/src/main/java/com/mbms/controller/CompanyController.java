@@ -1,6 +1,8 @@
 package com.mbms.controller;
 
 import java.sql.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,11 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mbms.exceptions.CouponSystemException;
+import com.mbms.login.LoginController;
+import com.mbms.login.Session;
 import com.mbms.model.Company;
 import com.mbms.model.Coupon;
+import com.mbms.model.CouponCaregory;
 import com.mbms.repository.CouponRepository;
 import com.mbms.service.CompanyService;
+import com.mbms.service.CompanyServiceImpl;
 
 @RestController
 @RequestMapping("/company")
@@ -30,54 +35,163 @@ public class CompanyController {
 	@Autowired
 	private CouponRepository couponRepository;
 
-	@GetMapping("/companyById/{id}")
-	public Company companyById(@PathVariable int id) throws CouponSystemException {
-		return companyService.getCompany(id);
+	
+	@Autowired
+	private Map<String, Session> tokens;
+
+	private Session exists(String token) {
+		return LoginController.tokens.get(token);
+	}
+	
+
+	
+	@PostMapping("/insertCoupon/{token}")
+	public ResponseEntity<String> insertCoupon(@RequestBody Coupon coupon, @PathVariable String token)
+			throws Exception {
+		Session session = exists(token);
+		if (session == null) {
+			throw new Exception("Something went wrong with the session !!");
+		} else if (session != null) {
+			session.setLastAccesed(System.currentTimeMillis());
+			try {
+				((CompanyServiceImpl) session.getFacade()).createCoupon(coupon);
+				System.out.println("the coupon create");
+				return new ResponseEntity<>("coupon created  " + coupon, HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<>(e.getMessage() + e.getStackTrace(), HttpStatus.UNAUTHORIZED);
+			}
+		}
+		return null;
 	}
 	
 	
-	@PostMapping("/insertCoupon/{companyId}")
-	public ResponseEntity<Coupon> insertCoupon(@RequestBody Coupon coupon, @RequestBody int companyId) throws CouponSystemException {
+	@GetMapping("/getAllCompanyCoupons/{company_id}/{token}")
+	public List<Coupon> getAllCompanyCoupons(@PathVariable int company_id, @PathVariable String token)
+			throws Exception {
+		Session session = exists(token);
+		if (session == null) {
+			throw new Exception("Something went wrong with the session !!");
+		} else if (session != null) {
+			session.setLastAccesed(System.currentTimeMillis());
+			try {
+				return ((CompanyServiceImpl) session.getFacade()).getAllCompanyCoupons(company_id);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		return null;
+	}
 
-	//	CustomLogin customLogin = getService();
 
-		Coupon coupi=companyService.insertCoupon(coupon, companyId);
-		ResponseEntity<Coupon> result = new ResponseEntity<Coupon>(coupi,HttpStatus.OK);
-		return result;
+	@PostMapping("/updateCoupon/{token}")
+	public ResponseEntity<Coupon> updateCoupon(@PathVariable String token, @RequestParam int id,
+			@RequestParam Date endDate, @RequestParam double price) throws Exception {
+		Session session = exists(token);
+		if (session == null) {
+			throw new Exception("Something went wrong with the session !!");
+		} else if (session != null) {
+			session.setLastAccesed(System.currentTimeMillis());
+			try {
+				Coupon coupon = null;
+				coupon = couponRepository.findById(id).get();
+				if (coupon != null) {
+					((CompanyServiceImpl) session.getFacade()).updateCoupon(coupon, endDate, price);
+					ResponseEntity<Coupon> result = new ResponseEntity<>(coupon, HttpStatus.OK);
+					return result;
+				}
+			} catch (Exception e) {
+				System.out.println("Cannot update coupon");
+			}
+		}
+		return null;
+	}
 
+	@DeleteMapping("/deleteCoupon/{couponId}/{token}")
+	public void deleteCoupon(@PathVariable int couponId, @PathVariable String token) throws Exception {
+		Session session = exists(token);
+		if (session == null) {
+			throw new Exception("Something went wrong with the session !!");
+		} else if (session != null) {
+			session.setLastAccesed(System.currentTimeMillis());
+			try {
+				Coupon coupon = null;
+				coupon = couponRepository.findById(couponId).get();
+				if (coupon != null) {
+					((CompanyServiceImpl) session.getFacade()).deleteCoupon(couponId);
+				}
+			} catch (Exception e) {
+				System.out.println("Failed to delete coupon " + couponId + e.getMessage());
+			}
+		}
+	}
+
+	@GetMapping("/getCompany/{id}/{token}")
+	public Company getCompany(@PathVariable int id, @PathVariable String token) throws Exception {
+		Session session = exists(token);
+		if (session == null) {
+			throw new Exception("Something went wrong with the session !!");
+		} else if (session != null) {
+			session.setLastAccesed(System.currentTimeMillis());
+			try {
+				return ((CompanyServiceImpl) session.getFacade()).getCompany(id);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		return null;
 	}
 	
-//	@DeleteMapping ("/deleteCoupon/{id}")
-//	public ResponseEntity<Coupon> deleteCoupon (@PathVariable("id") int id){
-//		companyService.deleteCoupon(id);
-//		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//		
-//	}
+	@GetMapping("/getCompanyByCouponType/{couponType}/{token}")
+	public List<Coupon> getCompanyByCouponType(@PathVariable CouponCaregory couponType, @PathVariable String token)
+			throws Exception {
+		Session session = exists(token);
+		if (session == null) {
+			throw new Exception("Something went wrong with the session !!");
+		} else if (session != null) {
+			session.setLastAccesed(System.currentTimeMillis());
+			try {
+				return ((CompanyServiceImpl) session.getFacade()).couponByCouponType(couponType);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		return null;
+	}
 	
-//	@PostMapping("/updateCoupon")  
-//	public ResponseEntity<Coupon> updateCoupon(@RequestBody Coupon coupon, @RequestParam Date endDate, @RequestParam double price) {
-//		
-//		if (id == coupon.getId()) {
-//
-//			companyService.updateCoupon(coupon, getService().getTypeId());
-//
-//			return coupon;
-//
-//		} else {
-//
-//			throw new UpdatingException("Coupon", "The id of the coupon and the id in the path incorrect",
-//
-//					coupon.getId());
-//
-//		}
-//
-//	}
-//		return null;
-//	
-//	
-//	}
-//	
-
+	
+	@GetMapping("/getCompanyByPrice/{price}/{token}")
+	public List<Coupon> getCompanyByPrice(@PathVariable double price, @PathVariable String token)
+			throws Exception {
+		Session session = exists(token);
+		if (session == null) {
+			throw new Exception("Something went wrong with the session !!");
+		} else if (session != null) {
+			session.setLastAccesed(System.currentTimeMillis());
+			try {
+				return ((CompanyServiceImpl) session.getFacade()).couponByPrice(price);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		return null;
+	}
+	
+	@GetMapping(value="/getCompanyByEndDate/{endDate}/{token}")
+	public List<Coupon> getCompanyByendDate(@PathVariable Date endDate, @PathVariable String token)
+			throws Exception {
+		Session session = exists(token);
+		if (session == null) {
+			throw new Exception("Something went wrong with the session !!");
+		} else if (session != null) {
+			session.setLastAccesed(System.currentTimeMillis());
+			try {
+				return ((CompanyServiceImpl) session.getFacade()).couponByDate(endDate);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		return null;
+	}
 
 
 }

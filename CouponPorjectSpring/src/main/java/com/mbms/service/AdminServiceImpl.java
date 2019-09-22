@@ -76,12 +76,16 @@ public class AdminServiceImpl  implements AdminService, CouponClientFacade{
 	}
 
 	@Override
+
 	public void updateCompany(Company company, String password, String email) {
 		company.setPassword(password);
 		company.setEmail(email);
 		companyRepository.save(company);
-		
+
 	}
+
+	
+	
 	
 	////Customer
 	

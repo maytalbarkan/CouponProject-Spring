@@ -39,10 +39,9 @@ public interface CouponRepository extends JpaRepository<Coupon, Integer>
 
 		Coupon couponByCustomerIdAndCouponId(int customerId, int couponId);
 
-
-
-
 		List<Coupon> findByEndDateBefore(java.util.Date date);
+		
+		List<Coupon> findAllById(int id);
 
 
 

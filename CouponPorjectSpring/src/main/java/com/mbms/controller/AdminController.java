@@ -91,6 +91,7 @@ public class AdminController {
 			try {
 				Company company = null;
 				company = adminService.companyById(id);
+				System.out.println(company);
 				if (company != null) {
 					((AdminServiceImpl) session.getFacade()).updateCompany(company, password, email);
 					return new ResponseEntity<>("company " + company.getCompanyName() + " was updated", HttpStatus.OK);
@@ -109,18 +110,15 @@ public class AdminController {
 	
 	//no work
 	@DeleteMapping ("/deleteCompany/{id}/(token}")
-	public ResponseEntity<Company> deleteCompany (@PathVariable("id") int id, @PathVariable String token) throws Exception{
+	public void deleteCompany (@PathVariable int id, @PathVariable String token) throws Exception{
 		Session session = exists(token);
 		if (session==null) {
 			throw new Exception("wrong session");
 		}
 		session.setLastAccesed(System.currentTimeMillis());
 		adminService.deleteCompany(id);
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		
 	}
-	
-	
-	
 	
 	
 	

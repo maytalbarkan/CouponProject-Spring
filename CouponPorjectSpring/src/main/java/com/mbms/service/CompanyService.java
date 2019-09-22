@@ -1,5 +1,6 @@
 package com.mbms.service;
 
+import java.sql.Date;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -9,28 +10,31 @@ import javax.validation.constraints.Positive;
 import com.mbms.exceptions.CouponSystemException;
 import com.mbms.model.Company;
 import com.mbms.model.Coupon;
+import com.mbms.model.CouponCaregory;
 
 public interface CompanyService {
 
 
 
-//	boolean performLogin(String name, String password);
+	Coupon createCoupon(Coupon coupon) throws Exception;
 
-	Coupon insertCoupon(@Valid Coupon coupon, @Positive int companyId) throws CouponSystemException;
+	boolean checkIfTitleAlreadyExists(String title);
 
-	void removeCoupon(@Positive int couponId, @Positive int companyId) throws CouponSystemException;
+	void updateCoupon(Coupon coupon, Date endDate, double price);
 
-	Coupon updateCoupon(@Valid Coupon coupon, @Positive int companyId) throws CouponSystemException;
+	Company getCompany(int id);
 
-	Coupon getCoupon(@Positive int couponId, @Positive int companyId) throws CouponSystemException;
+	void deleteCoupon(int couponId) throws Exception;
 
-	Company getCompany(@Positive int companyId) throws CouponSystemException;
+	void setCompany(Company company);
 
-	Company getComapnyByName(@NotNull String name) throws CouponSystemException;
+	List<Coupon> getAllCompanyCoupons(int company_id) throws Exception;
 
-	List<Coupon> getCompanyCoupons(@Positive int companyId) throws CouponSystemException;
+	List<Coupon> couponByPrice(double price) throws Exception;
 
-	boolean performLogin(String name, String password);
+	List<Coupon> couponByCouponType(CouponCaregory couponType) throws Exception;
+
+	List<Coupon> couponByDate(Date endDate) throws Exception;
 
 
 
